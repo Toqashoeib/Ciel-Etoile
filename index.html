@@ -1,0 +1,739 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>تسجيل مبيعات سيل ايتوال</title>
+    <style>
+        :root {
+            --bg: #0f172a;
+            --card: #111827;
+            --muted: #94a3b8;
+            --text: #e5e7eb;
+            --accent: #22d3ee;
+            --accent-2: #a78bfa;
+            --danger: #ef4444;
+            --ok: #10b981;
+            --border: #1f2937;
+            --shadow: 0 10px 30px rgba(0, 0, 0, .35);
+            --radius: 18px;
+        }
+
+        * {
+            box-sizing: border-box
+        }
+
+        html,
+        body {
+            height: 100%
+        }
+
+        body {
+            margin: 0;
+            font-family: "Cairo", system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
+            background: radial-gradient(1200px 800px at 80% -10%, rgba(167, 139, 250, .15), transparent 60%),
+                radial-gradient(1000px 700px at -20% 110%, rgba(34, 211, 238, .12), transparent 60%),
+                var(--bg);
+            color: var(--text);
+        }
+
+        .login-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 9999;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            background: linear-gradient(rgba(15, 23, 42, 0.8), rgba(15, 23, 42, 0.85)),
+                url('https://images.unsplash.com/photo-1579546929518-9e396f3cc809?q=80&w=2070&auto=format&fit=crop') no-repeat center center / cover !important;
+            backdrop-filter: blur(4px);
+        }
+
+        .login-card {
+            background: rgba(17, 24, 39, 0.85);
+            border: 1px solid rgba(255, 255, 255, 0.07);
+            backdrop-filter: blur(10px);
+            border-radius: var(--radius);
+            padding: 35px 30px;
+            width: 100%;
+            max-width: 400px;
+            box-shadow: var(--shadow);
+            text-align: center;
+        }
+
+        .brand-title {
+            font-size: 32px;
+            font-weight: 800;
+            background: linear-gradient(135deg, var(--accent), var(--accent-2));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin: 0 0 5px 0;
+            letter-spacing: 1px;
+            font-family: system-ui, -apple-system, sans-serif;
+        }
+
+        .login-card h2 {
+            margin: 0 0 8px 0;
+            color: var(--text);
+            font-size: 18px;
+            font-weight: 600;
+        }
+
+        .login-card p {
+            color: var(--muted);
+            font-size: 13px;
+            margin: 0 0 24px 0;
+        }
+
+        .login-group {
+            text-align: right;
+            margin-bottom: 16px;
+        }
+
+        .login-error {
+            color: var(--danger);
+            font-size: 13px;
+            margin-top: 12px;
+            display: none;
+        }
+
+        .wrap {
+            max-width: 1100px;
+            margin: 40px auto;
+            padding: 0 16px
+        }
+
+        header {
+            display: flex;
+            gap: 16px;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 25px
+        }
+
+        h1 {
+            font-size: clamp(20px, 2.6vw, 32px);
+            margin: 0;
+            letter-spacing: .4px
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: 1.1fr .9fr;
+            gap: 18px
+        }
+
+        @media (max-width:900px) {
+            .grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .card {
+            background: linear-gradient(180deg, rgba(255, 255, 255, .02), rgba(255, 255, 255, .0));
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            height: fit-content;
+        }
+
+        form {
+            padding: 18px
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 12px
+        }
+
+        @media (max-width:700px) {
+            .form-grid {
+                grid-template-columns: 1fr 1fr
+            }
+        }
+
+        label {
+            display: block;
+            font-size: 13px;
+            color: var(--muted);
+            margin-bottom: 6px
+        }
+
+        input,
+        select {
+            width: 100%;
+            padding: 12px 14px;
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            background: #0b1220;
+            color: var(--text);
+            outline: none
+        }
+
+        input:focus,
+        select:focus {
+            border-color: var(--accent);
+            box-shadow: 0 0 0 3px rgba(34, 211, 238, .12)
+        }
+
+        .actions {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-top: 12px
+        }
+
+        .btn {
+            border: 1px solid var(--border);
+            background: #0b1220;
+            color: var(--text);
+            padding: 8px 12px;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: .2s;
+            font-size: 13px
+        }
+
+        .btn:hover {
+            transform: translateY(-1px);
+            border-color: var(--accent)
+        }
+
+        .btn.primary {
+            background: linear-gradient(135deg, rgba(34, 211, 238, .15), rgba(167, 139, 250, .15));
+            border-color: transparent
+        }
+
+        .btn.danger {
+            border-color: rgba(239, 68, 68, .35);
+            color: #fecaca
+        }
+
+        .btn.archive-top {
+            background: linear-gradient(135deg, rgba(167, 139, 250, 0.2), rgba(34, 211, 238, 0.05));
+            border-color: var(--accent-2);
+            padding: 10px 16px;
+            font-weight: bold;
+            font-size: 14px;
+        }
+
+        .btn.archive-top:hover {
+            border-color: var(--accent);
+            box-shadow: 0 0 12px rgba(167, 139, 250, 0.2);
+        }
+
+        .summary {
+            margin-top: 12px;
+            padding: 10px 14px;
+            border: 1px dashed var(--border);
+            border-radius: 12px;
+            font-size: 14px;
+            color: var(--accent);
+            font-weight: 600;
+        }
+
+        .table-wrap {
+            padding: 18px
+        }
+
+        .day-block {
+            margin-bottom: 16px;
+            border: 1px solid var(--border);
+            border-radius: 14px;
+            overflow: hidden;
+            background: #0b1220;
+        }
+
+        .day-header {
+            background: #111827;
+            padding: 10px 14px;
+            font-weight: 600;
+            display: flex;
+            justify-content: space-between;
+            align-items: center
+        }
+
+        .day-total {
+            font-size: 14px;
+            color: var(--accent)
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse
+        }
+
+        thead th {
+            background: #111827;
+            text-align: right;
+            font-weight: 600;
+            padding: 10px;
+            font-size: 14px;
+            border-bottom: 1px solid var(--border)
+        }
+
+        tbody td {
+            padding: 10px;
+            border-bottom: 1px solid rgba(148, 163, 184, .1)
+        }
+
+        tbody tr:hover {
+            background: rgba(148, 163, 184, .05)
+        }
+
+        .empty {
+            padding: 24px;
+            text-align: center;
+            color: var(--muted)
+        }
+
+        .accordion-header {
+            background: linear-gradient(135deg, rgba(34, 211, 238, 0.08), rgba(167, 139, 250, 0.08));
+            border: 1px solid var(--border);
+            padding: 16px;
+            border-radius: 14px;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-weight: bold;
+            font-size: 15px;
+            transition: 0.3s;
+        }
+
+        .accordion-header:hover {
+            border-color: var(--accent);
+            background: rgba(34, 211, 238, 0.12);
+        }
+
+        .accordion-content {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.4s ease-out;
+            padding: 0;
+        }
+
+        .accordion-content.open {
+            max-height: 1000px;
+            overflow-y: auto;
+            margin-top: 14px;
+        }
+
+        .arrow-icon {
+            transition: transform 0.3s;
+            font-size: 12px;
+            color: var(--accent);
+        }
+
+        .arrow-icon.rotated {
+            transform: rotate(180deg);
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(15, 23, 42, 0.85);
+            backdrop-filter: blur(8px);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .modal.active {
+            display: flex;
+        }
+
+        .modal-card {
+            background: #111827;
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            width: 100%;
+            max-width: 850px;
+            max-height: 85vh;
+            display: flex;
+            flex-direction: column;
+            box-shadow: var(--shadow);
+            animation: modalFade 0.3s ease-out;
+        }
+
+        @keyframes modalFade {
+            from {
+                transform: translateY(20px);
+                opacity: 0;
+            }
+
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        .modal-header {
+            padding: 18px;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .modal-body {
+            padding: 18px;
+            overflow-y: auto;
+            flex: 1;
+        }
+
+        .archive-month-section {
+            margin-bottom: 24px;
+            border: 1px solid var(--accent-2);
+            border-radius: 14px;
+            padding: 14px;
+            background: rgba(167, 139, 250, 0.02);
+        }
+
+        .archive-month-title {
+            font-size: 16px;
+            font-weight: 700;
+            color: var(--accent-2);
+            margin: 0 0 12px 0;
+            border-bottom: 1px dashed rgba(167, 139, 250, 0.2);
+            padding-bottom: 6px;
+            display: flex;
+            justify-content: space-between;
+        }
+    </style>
+
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-database-compat.js"></script>
+</head>
+
+<body>
+
+    <div class="login-overlay" id="loginOverlay">
+        <div class="login-card">
+            <div class="brand-title">Ciel Etoile</div>
+            <h2> تسجيل الدخول</h2>
+            <form id="loginForm" style="padding: 0;">
+                <div class="login-group">
+                    <label for="username">اسم المستخدم</label>
+                    <input id="username" type="text" autocomplete="off" required />
+                </div>
+                <div class="login-group">
+                    <label for="password">كلمة المرور</label>
+                    <input id="password" type="password" required />
+                </div>
+                <button type="submit" class="btn primary"
+                    style="width: 100%; padding: 12px; font-size: 15px; margin-top: 10px;">دخول </button>
+                <div class="login-error" id="loginError">❌ اسم المستخدم أو كلمة المرور غير صحيحة!</div>
+            </form>
+        </div>
+    </div>
+
+    <div class="wrap">
+        <header>
+            <h1>تسجيل المبيعات ل سيل ايتوال</h1>
+            <button type="button" id="openArchiveBtn" class="btn archive-top">📅 مبيعات الشهور السابقة</button>
+        </header>
+
+        <div class="grid">
+            <section class="card">
+                <form id="saleForm">
+                    <h2 style="margin:4px 0 14px; font-size:18px">أضِف عملية بيع جديدة</h2>
+                    <div class="form-grid">
+                        <div><label for="date">التاريخ</label><input id="date" name="date" type="date" required /></div>
+                        <div><label for="item">الصنف</label><input id="item" name="item" type="text" required /></div>
+                        <div><label for="price">السعر</label><input id="price" name="price" type="number" step="0.01"
+                                required /></div>
+                        <div><label for="method">طريقة الدفع</label><select id="method" name="method" required>
+                                <option>كاش</option>
+                                <option>انستا باي</option>
+                                <option>محفظة</option>
+                                <option>فيزا</option>
+                            </select></div>
+                    </div>
+                    <div class="actions">
+                        <button type="submit" class="btn primary">➕ إضافة العملية</button>
+                        <button type="button" id="exportCsv" class="btn">⬇️ تصدير كل البيانات CSV</button>
+                        <button type="button" id="clearAll" class="btn danger">حذف الكل</button>
+                    </div>
+                    <div class="summary" id="overallTotal">إجمالي مبيعات الشهر الحالي: 0.00 ج.م</div>
+                </form>
+            </section>
+
+            <section class="card" style="border: none; background: transparent; box-shadow: none;">
+                <div class="table-wrap" style="padding: 0;">
+                    <div class="accordion-header" id="toggleAccordion">
+                        <span id="pageTitle">📊 سجل مبيعات شهر كذا</span>
+                        <span class="arrow-icon" id="arrowIcon">▼</span>
+                    </div>
+                    <div class="accordion-content" id="accordionContent">
+                        <div id="monthTableContainer"></div>
+                    </div>
+                </div>
+            </section>
+        </div>
+    </div>
+
+    <div class="modal" id="archiveModal">
+        <div class="modal-card">
+            <div class="modal-header">
+                <h2 style="margin:0; font-size:18px; color:var(--accent-2)">🗂️سجل مبيعات جميع الشهور </h2>
+                <button class="btn danger" id="closeArchiveBtn" style="padding: 6px 12px;">إغلاق ✖</button>
+            </div>
+            <div class="modal-body" id="archiveModalBody"></div>
+        </div>
+    </div>
+
+    <script>
+        const CORRECT_USER = 'admin';
+        const CORRECT_PASS = 'cieletoile@';
+
+        const loginForm = document.getElementById('loginForm');
+        const loginOverlay = document.getElementById('loginOverlay');
+        const loginError = document.getElementById('loginError');
+
+        loginForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            const userIn = document.getElementById('username').value.trim();
+            const passIn = document.getElementById('password').value;
+
+            if (userIn === CORRECT_USER && passIn === CORRECT_PASS) {
+                loginOverlay.style.display = 'none';
+                initFirebase();
+            } else {
+                loginError.style.display = 'block';
+                document.getElementById('password').value = '';
+            }
+        });
+
+        // 🔐 ربط بيانات التطبيق السحابي المستخرجة لـ Ciel Étoile
+        const firebaseConfig = {
+            apiKey: "AIzaSyCjBeyNh02J-3UMacyyWS4-PMI9JPVuFzg",
+            authDomain: "ciel-etoile.firebaseapp.com",
+            databaseURL: "https://ciel-etoile-default-rtdb.firebaseio.com/",
+            projectId: "ciel-etoile",
+            storageBucket: "ciel-etoile.firebasestorage.app",
+            messagingSenderId: "1095977013162",
+            appId: "1:1095977013162:web:3dd49a80a01d91229ae5d3"
+        };
+
+        let db;
+        let allSalesData = [];
+
+        function initFirebase() {
+            firebase.initializeApp(firebaseConfig);
+            db = firebase.database().ref('sales');
+
+            // جلب المبيعات سحابياً والتحديث فوري عند أي تغيير (Realtime)
+            db.on('value', (snapshot) => {
+                const dataObj = snapshot.val() || {};
+                allSalesData = Object.keys(dataObj).map(key => ({ id: key, ...dataObj[key] }));
+                render();
+                if (el.archiveModal.classList.contains('active')) buildArchive();
+            });
+        }
+
+        const el = {
+            date: document.getElementById('date'),
+            item: document.getElementById('item'),
+            price: document.getElementById('price'),
+            method: document.getElementById('method'),
+            form: document.getElementById('saleForm'),
+            monthTableContainer: document.getElementById('monthTableContainer'),
+            exportCsv: document.getElementById('exportCsv'),
+            clearAll: document.getElementById('clearAll'),
+            overallTotal: document.getElementById('overallTotal'),
+            pageTitle: document.getElementById('pageTitle'),
+            toggleAccordion: document.getElementById('toggleAccordion'),
+            accordionContent: document.getElementById('accordionContent'),
+            arrowIcon: document.getElementById('arrowIcon'),
+            openArchiveBtn: document.getElementById('openArchiveBtn'),
+            closeArchiveBtn: document.getElementById('closeArchiveBtn'),
+            archiveModal: document.getElementById('archiveModal'),
+            archiveModalBody: document.getElementById('archiveModalBody')
+        };
+
+        const todayDateObj = new Date();
+        el.date.valueAsDate = todayDateObj;
+
+        const realCurrentMonth = String(todayDateObj.getMonth() + 1).padStart(2, '0');
+        const realCurrentYear = String(todayDateObj.getFullYear());
+
+        const monthNames = { "01": "يناير", "02": "فبراير", "03": "مارس", "04": "أبريل", "05": "مايو", "06": "يونيو", "07": "يوليو", "08": "أغسطس", "09": "سبتمبر", "10": "أكتوبر", "11": "نوفمبر", "12": "ديسمبر" };
+        const currentMonthName = monthNames[realCurrentMonth] || realCurrentMonth;
+
+        el.pageTitle.textContent = `📊 عرض سجل مبيعات شهر (${currentMonthName}) بالكامل`;
+
+        function formatMoney(n) { return Number(n || 0).toLocaleString('ar-EG', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + " ج.م" }
+        function escapeHtml(s) { return String(s).replace(/[&<>\"]+/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '\"': '&quot;' }[c])) }
+
+        function render() {
+            if (loginOverlay.style.display !== 'none') return;
+            el.monthTableContainer.innerHTML = '';
+
+            if (!allSalesData.length) {
+                el.monthTableContainer.innerHTML = '<div class="empty">لا توجد عمليات مسجلة في هذا الشهر بعد</div>';
+                el.overallTotal.innerHTML = `📈 إجمالي شهر <strong>(${currentMonthName})</strong>: ${formatMoney(0)}`;
+                return;
+            }
+
+            const currentMonthData = allSalesData.filter(r => {
+                const parts = r.date.split('-');
+                return parts[1] === realCurrentMonth && parts[0] === realCurrentYear;
+            });
+            const grandTotal = currentMonthData.reduce((s, r) => s + Number(r.price), 0);
+            el.overallTotal.innerHTML = `📈 إجمالي شهر <strong>(${currentMonthName})</strong> الحالي بالكامل: ${formatMoney(grandTotal)}`;
+
+            const grouped = {};
+            currentMonthData.forEach(r => { if (!grouped[r.date]) grouped[r.date] = []; grouped[r.date].push(r) });
+
+            let monthHtml = '';
+            Object.keys(grouped).sort((a, b) => b.localeCompare(a)).forEach(date => {
+                const rows = grouped[date].map(r => `<tr><td>${escapeHtml(r.item)}</td><td>${formatMoney(r.price)}</td><td>${r.method}</td><td><button class='btn danger' style='padding:3px 8px;' data-del='${r.id}'>حذف</button></td></tr>`).join('');
+                const total = grouped[date].reduce((s, r) => s + Number(r.price), 0);
+
+                monthHtml += `<div class="day-block">
+                    <div class="day-header"><span>📅 ${date}</span><span class="day-total">إجمالي اليوم: ${formatMoney(total)}</span></div>
+                    <table><thead><tr><th>الصنف</th><th>السعر</th><th>طريقة الدفع</th><th>إجراءات</th></tr></thead><tbody>${rows}</tbody></table>
+                </div>`;
+            });
+
+            el.monthTableContainer.innerHTML = monthHtml || `<div class="empty">لا توجد مبيعات مسجلة لشهر ${currentMonthName}</div>`;
+
+            document.querySelectorAll('[data-del]').forEach(btn => {
+                btn.replaceWith(btn.cloneNode(true));
+            });
+
+            document.querySelectorAll('[data-del]').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    if (confirm('هل ترغب في حذف هذا السجل نهائياً؟')) {
+                        const id = btn.getAttribute('data-del');
+                        firebase.database().ref('sales/' + id).remove();
+                    }
+                })
+            });
+        }
+
+        function buildArchive() {
+            el.archiveModalBody.innerHTML = '';
+
+            if (!allSalesData.length) {
+                el.archiveModalBody.innerHTML = '<div class="empty">الأرشيف فارغ تماماً حالياً</div>';
+                return;
+            }
+
+            const monthlyGroups = {};
+            allSalesData.forEach(r => {
+                const parts = r.date.split('-');
+                const monthKey = `${parts[0]}-${parts[1]}`;
+                if (!monthlyGroups[monthKey]) monthlyGroups[monthKey] = [];
+                monthlyGroups[monthKey].push(r);
+            });
+
+            let archiveHtml = '';
+
+            Object.keys(monthlyGroups).sort((a, b) => b.localeCompare(a)).forEach(monthKey => {
+                const [year, month] = monthKey.split('-');
+                const arMonthName = monthNames[month] || month;
+                const monthRecords = monthlyGroups[monthKey];
+                const monthTotal = monthRecords.reduce((s, r) => s + Number(r.price), 0);
+
+                const dayGroup = {};
+                monthRecords.forEach(r => { if (!dayGroup[r.date]) dayGroup[r.date] = []; dayGroup[r.date].push(r) });
+
+                let dayBlocksHtml = '';
+                Object.keys(dayGroup).sort((a, b) => b.localeCompare(a)).forEach(date => {
+                    const rows = dayGroup[date].map(r => `<tr><td>${escapeHtml(r.item)}</td><td>${formatMoney(r.price)}</td><td>${r.method}</td><td><button class='btn danger' style='padding:3px 8px;' data-del='${r.id}'>حذف</button></td></tr>`).join('');
+                    const dayTotal = dayGroup[date].reduce((s, r) => s + Number(r.price), 0);
+
+                    dayBlocksHtml += `<div class="day-block">
+                        <div class="day-header" style="background:#1f2937;"><span>📅 ${date}</span><span class="day-total" style="color:var(--accent-2);">إجمالي اليوم: ${formatMoney(dayTotal)}</span></div>
+                        <table><thead><tr><th>الصنف</th><th>السعر</th><th>طريقة الدفع</th><th>إجراءات</th></tr></thead><tbody>${rows}</tbody></table>
+                    </div>`;
+                });
+
+                archiveHtml += `<div class="archive-month-section">
+                    <div class="archive-month-title">
+                        <span>📁 مبيعات شهر ${arMonthName} / لسنة ${year}</span>
+                        <span>إجمالي الشهر بالكامل: ${formatMoney(monthTotal)}</span>
+                    </div>
+                    ${dayBlocksHtml}
+                </div>`;
+            });
+
+            el.archiveModalBody.innerHTML = archiveHtml;
+
+            el.archiveModalBody.querySelectorAll('[data-del]').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    if (confirm('هل ترغب في حذف هذا السجل نهائياً من الأرشيف؟')) {
+                        const id = btn.getAttribute('data-del');
+                        firebase.database().ref('sales/' + id).remove();
+                    }
+                })
+            });
+        }
+
+        el.openArchiveBtn.addEventListener('click', () => {
+            buildArchive();
+            el.archiveModal.classList.add('active');
+        });
+        el.closeArchiveBtn.addEventListener('click', () => {
+            el.archiveModal.classList.remove('active');
+        });
+
+        el.toggleAccordion.addEventListener('click', () => {
+            el.accordionContent.classList.toggle('open');
+            el.arrowIcon.classList.toggle('rotated');
+        });
+
+        el.date.addEventListener('change', render);
+
+        el.form.addEventListener('submit', e => {
+            e.preventDefault();
+            const record = {
+                date: el.date.value,
+                item: el.item.value.trim(),
+                price: Number(el.price.value),
+                method: el.method.value,
+                created: Date.now()
+            };
+
+            // رفع العملية السحابية
+            db.push(record);
+
+            el.item.value = '';
+            el.price.value = '';
+            el.item.focus()
+        });
+
+        el.exportCsv.addEventListener('click', () => {
+            if (!allSalesData.length) { alert('لا توجد بيانات لتصديرها'); return }
+            const header = ['التاريخ', 'الصنف', 'السعر', 'طريقة الدفع'];
+            const lines = allSalesData.map(r => [r.date, r.item, r.price, r.method]);
+            const csv = [header, ...lines].map(row => row.map(c => `"${String(c).replace(/"/g, '""')}"`).join(',')).join('\n');
+            const blob = new Blob(["\uFEFF" + csv], { type: 'text/csv;charset=utf-8;' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url; a.download = 'تقرير_المبيعات_التاريخي_الكامل.csv';
+            document.body.appendChild(a); a.click(); a.remove(); URL.revokeObjectURL(url)
+        });
+
+        el.clearAll.addEventListener('click', () => {
+            if (confirm('تنبيه خطير! سيتم مسح كافة البيانات المسجلة نهائياً من السيرفر، هل أنتِ متأكدة؟')) {
+                firebase.database().ref('sales').remove();
+            }
+        });
+    </script>
+</body>
+
+</html>
