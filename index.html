@@ -497,7 +497,7 @@
     <div class="modal" id="editModal">
         <div class="modal-card" style="max-width:480px;">
             <div class="modal-header">
-                <h2 style="margin:0; font-size:18px; color:var(--accent)">✏️ تعديل العملية</h2>
+                <h2 style="margin:0; font-size:18px; color:var(--accent)">تعديل العملية</h2>
                 <button class="btn danger" id="closeEditBtn" style="padding: 6px 12px;">إغلاق ✖</button>
             </div>
             <div class="modal-body">
@@ -649,7 +649,7 @@
 
             let monthHtml = '';
             Object.keys(grouped).sort((a, b) => b.localeCompare(a)).forEach(date => {
-                const rows = grouped[date].map(r => `<tr><td>${escapeHtml(r.item)}</td><td>${formatMoney(r.price)}</td><td>${r.method}</td><td><button class='btn' style='padding:3px 8px;' data-edit='${r.id}'>✏️ تعديل</button> <button class='btn danger' style='padding:3px 8px;' data-del='${r.id}'>حذف</button></td></tr>`).join('');
+                const rows = grouped[date].map(r => `<tr><td>${escapeHtml(r.item)}</td><td>${formatMoney(r.price)}</td><td>${r.method}</td><td><button class='btn' style='padding:3px 8px;' data-edit='${r.id}'>تعديل</button> <button class='btn danger' style='padding:3px 8px;' data-del='${r.id}'>حذف</button></td></tr>`).join('');
                 const total = grouped[date].reduce((s, r) => s + Number(r.price), 0);
 
                 monthHtml += `<div class="day-block">
@@ -713,7 +713,7 @@
 
                 let dayBlocksHtml = '';
                 Object.keys(dayGroup).sort((a, b) => b.localeCompare(a)).forEach(date => {
-                    const rows = dayGroup[date].map(r => `<tr><td>${escapeHtml(r.item)}</td><td>${formatMoney(r.price)}</td><td>${r.method}</td><td><button class='btn' style='padding:3px 8px;' data-edit='${r.id}'>✏️ تعديل</button> <button class='btn danger' style='padding:3px 8px;' data-del='${r.id}'>حذف</button></td></tr>`).join('');
+                    const rows = dayGroup[date].map(r => `<tr><td>${escapeHtml(r.item)}</td><td>${formatMoney(r.price)}</td><td>${r.method}</td><td><button class='btn' style='padding:3px 8px;' data-edit='${r.id}'>تعديل</button> <button class='btn danger' style='padding:3px 8px;' data-del='${r.id}'>حذف</button></td></tr>`).join('');
                     const dayTotal = dayGroup[date].reduce((s, r) => s + Number(r.price), 0);
 
                     dayBlocksHtml += `<div class="day-block">
