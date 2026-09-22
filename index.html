@@ -95,22 +95,6 @@
             margin-bottom: 16px;
         }
 
-        .login-remember {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            margin-bottom: 16px;
-            cursor: pointer;
-            user-select: none;
-            font-size: 14px;
-            color: var(--text);
-        }
-
-        .login-remember input {
-            width: auto;
-            cursor: pointer;
-        }
-
         .login-error {
             color: var(--danger);
             font-size: 13px;
@@ -448,10 +432,6 @@
                     <label for="password">كلمة المرور</label>
                     <input id="password" type="password" required />
                 </div>
-                <label class="login-remember">
-                    <input type="checkbox" id="rememberMe" />
-                    <span>تذكرني</span>
-                </label>
                 <button type="submit" class="btn primary"
                     style="width: 100%; padding: 12px; font-size: 15px; margin-top: 10px;">دخول </button>
                 <div class="login-error" id="loginError">❌ اسم المستخدم أو كلمة المرور غير صحيحة!</div>
@@ -514,6 +494,37 @@
         </div>
     </div>
 
+    <div class="modal" id="editModal">
+        <div class="modal-card" style="max-width:480px;">
+            <div class="modal-header">
+                <h2 style="margin:0; font-size:18px; color:var(--accent)">✏️ تعديل العملية</h2>
+                <button class="btn danger" id="closeEditBtn" style="padding: 6px 12px;">إغلاق ✖</button>
+            </div>
+            <div class="modal-body">
+                <form id="editForm">
+                    <input type="hidden" id="editId" />
+                    <div class="form-grid" style="grid-template-columns:1fr 1fr;">
+                        <div><label for="editDate">التاريخ</label><input id="editDate" type="date" required /></div>
+                        <div><label for="editItem">الصنف</label><input id="editItem" type="text" required /></div>
+                        <div><label for="editPrice">السعر</label><input id="editPrice" type="number" step="0.01"
+                                required /></div>
+                        <div><label for="editMethod">طريقة الدفع</label>
+                            <select id="editMethod" required>
+                                <option>كاش</option>
+                                <option>انستا باي</option>
+                                <option>محفظة</option>
+                                <option>فيزا</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="actions">
+                        <button type="submit" class="btn primary">💾 حفظ التعديل</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
     <script>
         const CORRECT_USER = 'admin';
         const CORRECT_PASS = 'cieletoile@';
@@ -521,18 +532,6 @@
         const loginForm = document.getElementById('loginForm');
         const loginOverlay = document.getElementById('loginOverlay');
         const loginError = document.getElementById('loginError');
-        const rememberMeCheckbox = document.getElementById('rememberMe');
-
-        // التحقق عند تحميل الصفحة إذا كانت البيانات محفوظة مسبقاً
-        window.addEventListener('DOMContentLoaded', () => {
-            const savedUser = localStorage.getItem('remembered_user');
-            const savedPass = localStorage.getItem('remembered_pass');
-
-            if (savedUser === CORRECT_USER && savedPass === CORRECT_PASS) {
-                loginOverlay.style.display = 'none';
-                initFirebase();
-            }
-        });
 
         loginForm.addEventListener('submit', (e) => {
             e.preventDefault();
@@ -540,13 +539,6 @@
             const passIn = document.getElementById('password').value;
 
             if (userIn === CORRECT_USER && passIn === CORRECT_PASS) {
-                if (rememberMeCheckbox.checked) {
-                    localStorage.setItem('remembered_user', userIn);
-                    localStorage.setItem('remembered_pass', passIn);
-                } else {
-                    localStorage.removeItem('remembered_user');
-                    localStorage.removeItem('remembered_pass');
-                }
                 loginOverlay.style.display = 'none';
                 initFirebase();
             } else {
@@ -599,8 +591,27 @@
             openArchiveBtn: document.getElementById('openArchiveBtn'),
             closeArchiveBtn: document.getElementById('closeArchiveBtn'),
             archiveModal: document.getElementById('archiveModal'),
-            archiveModalBody: document.getElementById('archiveModalBody')
+            archiveModalBody: document.getElementById('archiveModalBody'),
+            editModal: document.getElementById('editModal'),
+            editForm: document.getElementById('editForm'),
+            closeEditBtn: document.getElementById('closeEditBtn'),
+            editId: document.getElementById('editId'),
+            editDate: document.getElementById('editDate'),
+            editItem: document.getElementById('editItem'),
+            editPrice: document.getElementById('editPrice'),
+            editMethod: document.getElementById('editMethod')
         };
+
+        function openEditModal(id) {
+            const record = allSalesData.find(r => r.id === id);
+            if (!record) return;
+            el.editId.value = record.id;
+            el.editDate.value = record.date;
+            el.editItem.value = record.item;
+            el.editPrice.value = record.price;
+            el.editMethod.value = record.method;
+            el.editModal.classList.add('active');
+        }
 
         const todayDateObj = new Date();
         el.date.valueAsDate = todayDateObj;
@@ -638,7 +649,7 @@
 
             let monthHtml = '';
             Object.keys(grouped).sort((a, b) => b.localeCompare(a)).forEach(date => {
-                const rows = grouped[date].map(r => `<tr><td>${escapeHtml(r.item)}</td><td>${formatMoney(r.price)}</td><td>${r.method}</td><td><button class='btn danger' style='padding:3px 8px;' data-del='${r.id}'>حذف</button></td></tr>`).join('');
+                const rows = grouped[date].map(r => `<tr><td>${escapeHtml(r.item)}</td><td>${formatMoney(r.price)}</td><td>${r.method}</td><td><button class='btn' style='padding:3px 8px;' data-edit='${r.id}'>✏️ تعديل</button> <button class='btn danger' style='padding:3px 8px;' data-del='${r.id}'>حذف</button></td></tr>`).join('');
                 const total = grouped[date].reduce((s, r) => s + Number(r.price), 0);
 
                 monthHtml += `<div class="day-block">
@@ -659,6 +670,16 @@
                         const id = btn.getAttribute('data-del');
                         firebase.database().ref('sales/' + id).remove();
                     }
+                })
+            });
+
+            document.querySelectorAll('[data-edit]').forEach(btn => {
+                btn.replaceWith(btn.cloneNode(true));
+            });
+
+            document.querySelectorAll('[data-edit]').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    openEditModal(btn.getAttribute('data-edit'));
                 })
             });
         }
@@ -692,7 +713,7 @@
 
                 let dayBlocksHtml = '';
                 Object.keys(dayGroup).sort((a, b) => b.localeCompare(a)).forEach(date => {
-                    const rows = dayGroup[date].map(r => `<tr><td>${escapeHtml(r.item)}</td><td>${formatMoney(r.price)}</td><td>${r.method}</td><td><button class='btn danger' style='padding:3px 8px;' data-del='${r.id}'>حذف</button></td></tr>`).join('');
+                    const rows = dayGroup[date].map(r => `<tr><td>${escapeHtml(r.item)}</td><td>${formatMoney(r.price)}</td><td>${r.method}</td><td><button class='btn' style='padding:3px 8px;' data-edit='${r.id}'>✏️ تعديل</button> <button class='btn danger' style='padding:3px 8px;' data-del='${r.id}'>حذف</button></td></tr>`).join('');
                     const dayTotal = dayGroup[date].reduce((s, r) => s + Number(r.price), 0);
 
                     dayBlocksHtml += `<div class="day-block">
@@ -720,6 +741,12 @@
                     }
                 })
             });
+
+            el.archiveModalBody.querySelectorAll('[data-edit]').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    openEditModal(btn.getAttribute('data-edit'));
+                })
+            });
         }
 
         el.openArchiveBtn.addEventListener('click', () => {
@@ -728,6 +755,23 @@
         });
         el.closeArchiveBtn.addEventListener('click', () => {
             el.archiveModal.classList.remove('active');
+        });
+
+        el.closeEditBtn.addEventListener('click', () => {
+            el.editModal.classList.remove('active');
+        });
+
+        el.editForm.addEventListener('submit', e => {
+            e.preventDefault();
+            const id = el.editId.value;
+            const updated = {
+                date: el.editDate.value,
+                item: el.editItem.value.trim(),
+                price: Number(el.editPrice.value),
+                method: el.editMethod.value
+            };
+            firebase.database().ref('sales/' + id).update(updated);
+            el.editModal.classList.remove('active');
         });
 
         el.toggleAccordion.addEventListener('click', () => {
