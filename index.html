@@ -427,11 +427,15 @@
             <form id="loginForm" style="padding: 0;">
                 <div class="login-group">
                     <label for="username">اسم المستخدم</label>
-                    <input id="username" type="text" autocomplete="off" required />
+                    <input id="username" name="username" type="text" autocomplete="username" required />
                 </div>
                 <div class="login-group">
                     <label for="password">كلمة المرور</label>
-                    <input id="password" type="password" required />
+                    <input id="password" name="password" type="password" autocomplete="current-password" required />
+                </div>
+                <div class="login-group" style="display:flex; align-items:center; gap:8px;">
+                    <input id="rememberMe" type="checkbox" checked style="width:auto; margin:0;" />
+                    <label for="rememberMe" style="margin:0; cursor:pointer;">تذكرني على هذا الجهاز</label>
                 </div>
                 <button type="submit" class="btn primary"
                     style="width: 100%; padding: 12px; font-size: 15px; margin-top: 10px;">دخول </button>
@@ -540,6 +544,10 @@
             const passIn = document.getElementById('password').value;
 
             if (userIn === CORRECT_USER && passIn === CORRECT_PASS) {
+                try {
+                    if (document.getElementById('rememberMe').checked) localStorage.setItem('ce_remember', '1');
+                    else localStorage.removeItem('ce_remember');
+                } catch (err) { }
                 loginOverlay.style.display = 'none';
                 initFirebase();
             } else {
@@ -818,6 +826,14 @@
                 firebase.database().ref('sales').remove();
             }
         });
+
+        // دخول تلقائي لو الجهاز متذكّر
+        try {
+            if (localStorage.getItem('ce_remember') === '1') {
+                loginOverlay.style.display = 'none';
+                initFirebase();
+            }
+        } catch (err) { }
     </script>
 </body>
 
