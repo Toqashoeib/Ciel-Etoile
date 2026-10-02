@@ -71,7 +71,7 @@
             font-weight: 800;
             background: linear-gradient(135deg, var(--accent), var(--accent-2));
             -webkit-background-clip: text;
-             background-clip: text;
+            background-clip: text;
             -webkit-text-fill-color: transparent;
             margin: 0 0 5px 0;
             letter-spacing: 1px;
@@ -626,6 +626,7 @@
         el.pageTitle.textContent = `📊 عرض سجل مبيعات شهر (${currentMonthName}) بالكامل`;
 
         function formatMoney(n) { return Number(n || 0).toLocaleString('ar-EG', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + " ج.م" }
+        function dayName(d) { const p = String(d).split('-'); if (p.length !== 3) return ''; const days = ['الأحد', 'الاثنين', 'الثلاثاء', 'الأربعاء', 'الخميس', 'الجمعة', 'السبت']; return days[new Date(+p[0], +p[1] - 1, +p[2]).getDay()]; }
         function escapeHtml(s) { return String(s).replace(/[&<>\"]+/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '\"': '&quot;' }[c])) }
 
         function render() {
@@ -654,7 +655,7 @@
                 const total = grouped[date].reduce((s, r) => s + Number(r.price), 0);
 
                 monthHtml += `<div class="day-block">
-                    <div class="day-header"><span>📅 ${date}</span><span class="day-total">إجمالي اليوم: ${formatMoney(total)}</span></div>
+                    <div class="day-header"><span>📅 ${date} - ${dayName(date)}</span><span class="day-total">إجمالي اليوم: ${formatMoney(total)}</span></div>
                     <table><thead><tr><th>الصنف</th><th>السعر</th><th>طريقة الدفع</th><th>إجراءات</th></tr></thead><tbody>${rows}</tbody></table>
                 </div>`;
             });
@@ -718,7 +719,7 @@
                     const dayTotal = dayGroup[date].reduce((s, r) => s + Number(r.price), 0);
 
                     dayBlocksHtml += `<div class="day-block">
-                        <div class="day-header" style="background:#1f2937;"><span>📅 ${date}</span><span class="day-total" style="color:var(--accent-2);">إجمالي اليوم: ${formatMoney(dayTotal)}</span></div>
+                        <div class="day-header" style="background:#1f2937;"><span>📅 ${date} - ${dayName(date)}</span><span class="day-total" style="color:var(--accent-2);">إجمالي اليوم: ${formatMoney(dayTotal)}</span></div>
                         <table><thead><tr><th>الصنف</th><th>السعر</th><th>طريقة الدفع</th><th>إجراءات</th></tr></thead><tbody>${rows}</tbody></table>
                     </div>`;
                 });
